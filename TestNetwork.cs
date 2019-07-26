@@ -28,8 +28,8 @@ public class TestNetwork : MonoBehaviour
 
     int len2 = 0;
     short sidcid2 = 0;
-    int flag11 = 0;
-    int flag22 = 0;
+    string flag11 = "zlw";
+    string flag22 = "123";
     
 
     MemoryStream memoryStream;
@@ -50,8 +50,9 @@ public class TestNetwork : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        MsgCSLogin msg = new MsgCSLogin(flag1, flag2);
-        bytes = msg.Marshal();
+        //MsgCSLogin msg = new MsgCSLogin(flag11, flag22);
+        //bytes = msg.Marshal();
+
         //Debug.Log(sizeof(short));
         //binaryWriter.Write(len);
         //binaryWriter.Write(sidcid);
@@ -61,18 +62,29 @@ public class TestNetwork : MonoBehaviour
         //Debug.Log("bytes: " + bytes.Length);
         //bytes = memoryStream.ToArray();
         //binaryWriter.Close();
-        net_stream.Write(bytes,0,bytes.Length);
 
-        //net_stream.Read(bytes2, 0, 14);
+        //net_stream.Write(bytes,0,bytes.Length);
 
-        //len2 = binaryReader.ReadInt32();
-        //sidcid2 = binaryReader.ReadInt16();
-        //flag11 = binaryReader.ReadInt32();
-        //flag22 = binaryReader.ReadInt32();
-        //Debug.Log(len2);
-        //Debug.Log(sidcid2);
-        //Debug.Log(flag11);
-        //Debug.Log(flag22);
+        //if(net_stream.CanRead)
+        //if(net_stream.Length >= 10)
+        
+            //net_stream.Read(bytes2, 0, 14);
+            //MsgSCBase msg2 = new UnifromUnmarshal().Unmarshal(bytes2);
+            //MsgSCConfirm msg2 = new MsgSCConfirm().Unmarshal(bytes2);
+            //Debug.Log("sid" + msg2.sid);
+            //Debug.Log("cid" + msg2.cid);
+            //Debug.Log(((MsgSCConfirm)msg2).confirm);
+            //len2 = binaryReader.ReadInt32();
+            //sidcid2 = binaryReader.ReadInt16();
+            //flag11 = binaryReader.ReadInt32();
+            //flag22 = binaryReader.ReadInt32();
+            //Debug.Log(len2);
+            //Debug.Log(sidcid2);
+            //Debug.Log(flag11);
+            //Debug.Log(flag22);
+            //net_stream = tcp_socket.GetStream();
+        
+
         //Header header = new Header();
         //header.WriteInt32(9);
         //header.WriteString8("hello");

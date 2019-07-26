@@ -128,7 +128,6 @@ namespace Assets.Script
             );
         }
 
-
         public void WriteString16(string value)
         {
             WriteInt16
