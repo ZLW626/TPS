@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using UnityEngine;
+using System.IO;
 
 namespace Assets.Script.Network
 {
@@ -42,6 +43,22 @@ namespace Assets.Script.Network
                 return;
             tcpSocket.Close();
             socketReady = false;
+        }
+
+        public static byte[] RemoveDataHead()
+        {
+            byte[] dataLenBytes = new byte[4];
+            netStream.Read(dataLenBytes, 0, 4);
+            int dataLen = ConvertBytesToInt32(dataLenBytes);
+            byte[] dataBytesNoHead = new byte[dataLen];
+            netStream.Read(dataBytesNoHead, 0, dataLen - 4);
+            return dataBytesNoHead;
+        }
+
+        private static int ConvertBytesToInt32(byte[] bytes)
+        {
+            return bytes[0] & 0xff | ((bytes[1] & 0xff) << 8)
+                | ((bytes[2] & 0xff) << 16) | (bytes[3] & 0xff) << 24;
         }
 
         private void OnApplicationQuit()

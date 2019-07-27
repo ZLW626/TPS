@@ -169,7 +169,7 @@ namespace Assets.Script.Common
         {
             memoryStream = new MemoryStream(bytes);
             binaryReader = new BinaryReader(memoryStream);
-            int dataLen = binaryReader.ReadInt32();
+            //int dataLen = binaryReader.ReadInt32();
             short sid_cid = binaryReader.ReadInt16();
             confirm = binaryReader.ReadInt32();
             return this;
@@ -178,27 +178,33 @@ namespace Assets.Script.Common
 
     public class UnifromUnmarshal
     {
-        protected MemoryStream memoryStream;
-        protected BinaryReader binaryReader;
+        //protected MemoryStream memoryStream;
+        //protected BinaryReader binaryReader;
 
         public MsgSCBase Unmarshal(byte[] bytes)
         {
             MsgSCBase msgSCBase = null;
-            memoryStream = new MemoryStream(bytes);
-            binaryReader = new BinaryReader(memoryStream);
-            int dataLen = binaryReader.ReadInt32();
-            short sid_cid = binaryReader.ReadInt16();
+            //memoryStream = new MemoryStream(bytes);
+            //binaryReader = new BinaryReader(memoryStream);
+            ///int dataLen = binaryReader.ReadInt32();
+            //short sid_cid = binaryReader.ReadInt16();
+            short sid_cid = ConvertBytesToInt16(bytes);
             switch(sid_cid)
             {
                 case 0x2001:
                     msgSCBase = new MsgSCConfirm().Unmarshal(bytes);
                     msgSCBase.sid = sid_cid >> 8;
-                    msgSCBase.cid = sid_cid & 0x0011;
+                    msgSCBase.cid = sid_cid & 0x00FF;
                     break;
                 default:
                     return null;
             }
             return msgSCBase;
+        }
+
+        private short ConvertBytesToInt16(byte[] bytes)
+        {
+            return (short)(bytes[0] & 0xff | ((bytes[1] & 0xff) << 8));
         }
     }
 }

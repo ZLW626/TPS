@@ -22,6 +22,8 @@ public class LoginOrRegister : MonoBehaviour
     [SerializeField] private InputField registerPasswordIF;
     [SerializeField] private InputField registerPasswordIF2;
 
+    //byte[] dataReceived;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -47,17 +49,31 @@ public class LoginOrRegister : MonoBehaviour
 
     public void OnLoginOKBtnClicked()
     {
-        //获取输入框的用户名和密码并加密
-        string username = MD5Encryption(loginNameIF.text);
+        //获取输入框的用户名和密码, 并加密密码
+        //string username = MD5Encryption(loginNameIF.text);
+        string username = loginNameIF.text;
         string password = MD5Encryption(loginPasswordIF.text);
-        Debug.Log(username);
-        Debug.Log(password);
+        //Debug.Log(username);
+        //Debug.Log(password);
 
         MsgCSLogin msg = new MsgCSLogin(username, password);
 
-        byte[] msgPacked = msg.Marshal();
-        SocketClient.netStream.Write(msgPacked, 0, msgPacked.Length);
-        
+        byte[] dataToSend = msg.Marshal();
+        SocketClient.netStream.Write(dataToSend, 0, dataToSend.Length);
+
+        //byte[] dataLenReceived = new byte[4];
+        //SocketClient.netStream.Read(dataLenReceived, 0, 4);
+
+        //byte[] dataReceived = { };
+        byte[] dataReceivedNoHead = SocketClient.RemoveDataHead();
+        MsgSCBase msgComfirm = new UnifromUnmarshal().Unmarshal(dataReceivedNoHead);
+        int comfirmCode = ((MsgSCConfirm)msgComfirm).confirm;
+        if (comfirmCode == 626)
+            Debug.Log("login successfully!");
+        else
+            Debug.Log("login failed!");
+
+
     }
     public void OnLoginCancelBtnClicked()
     {
@@ -72,17 +88,28 @@ public class LoginOrRegister : MonoBehaviour
     }
     public void OnRegisterOKBtnClicked()
     {
+        //比较两次输入的密码是否一致
         if(registerPasswordIF.text.Equals(registerPasswordIF2.text))
         {
-            string username = MD5Encryption(registerNameIF.text);
+            //如果一致, 获取输入框的用户名和密码,并加密密码
+            //string username = MD5Encryption(registerNameIF.text);
+            string username = registerNameIF.text;
             string password = MD5Encryption(registerPasswordIF.text);
             //string password2 = MD5Encryption(registerPasswordIF2.text);
-            Debug.Log(username);
-            Debug.Log(password);
+            //Debug.Log(username);
+            //Debug.Log(password);
             //Debug.Log(password2);
             MsgCSRegister msg = new MsgCSRegister(username, password);
             byte[] msgPacked = msg.Marshal();
             SocketClient.netStream.Write(msgPacked, 0, msgPacked.Length);
+
+            byte[] dataReceivedNoHead = SocketClient.RemoveDataHead();
+            MsgSCBase msgComfirm = new UnifromUnmarshal().Unmarshal(dataReceivedNoHead);
+            int comfirmCode = ((MsgSCConfirm)msgComfirm).confirm;
+            if (comfirmCode == 1)
+                Debug.Log("register successfully!");
+            else
+                Debug.Log("register failed!");
 
         }
         else
