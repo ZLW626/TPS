@@ -17,23 +17,22 @@ public class PlayerController : MonoBehaviour
     private Vector3 camRotCenter;
     private Transform camTrans;
 
+    //玩家上坦克
+    [SerializeField] private GameObject mainCameraObj;
+    [SerializeField] private GameObject tankCameraObj;
+    [SerializeField] private PlayerTankController playerTankController;
+    public bool isInTank;
 
+    //通过刚体控制玩家的移动
     private Rigidbody playerRigidbody;
     private CapsuleCollider playerCollider;
     private bool isJump;
     private bool isInAir;
     private float jumpForce = 60f;
+    //private Animator playerAnimator;
+    public float h;//键盘输入
+    public float v;
 
-    //[SerializeField] private CharacterController playerController;
-    //private Vector2 inputXYValue;
-    //private Vector3 movement;
-    //private float speed = 4f;
-    //private float speedJump = 7f;
-    //private float gravity = 15f;
-    //private float jumpForce = 80f;
-    //private bool isJumping = false;
-    //private bool isMoving = false;
-    //private CollisionFlags flags;
     // Start is called before the first frame update
     void Start()
     {
@@ -43,25 +42,37 @@ public class PlayerController : MonoBehaviour
 
         playerRigidbody = GetComponent<Rigidbody>();
         playerCollider = GetComponent<CapsuleCollider>();
+        //playerAnimator = GetComponent<Animator>();
+
+        isInTank = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (isInTank)
+            return;
+        //Debug.Log("out tank update");
         CameraRotate();
+
+        PlayerGetOnTank();
 
         if(Input.GetButtonDown("Jump") && !isJump)
         {
             Debug.Log("Jump");
             isJump = true;
         }
-        //PlayerMove();
+
+        //锁定鼠标
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
 
     private void FixedUpdate()
     {
+        if (isInTank)
+            return;
+
         PlayerMove();
     }
 
@@ -109,8 +120,8 @@ public class PlayerController : MonoBehaviour
     void PlayerMove()
     {
         //获取键盘输入
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        h = Input.GetAxis("Horizontal");
+        v = Input.GetAxis("Vertical");
 
         //计算玩家移动速度
         float speed = Mathf.Sqrt(h * h + v * v) * speedAdjust;
@@ -118,16 +129,12 @@ public class PlayerController : MonoBehaviour
         //计算玩家移动向量
         Vector3 movement = (transform.forward * v +
             transform.right * h).normalized * speed * Time.deltaTime;
-        //movement = movement.normalized * speed;
         playerRigidbody.MovePosition(transform.position + movement);
-        //transform.Translate()
 
-        //施加一个力，使玩家运动
-        //if（playerRigidbody.velocity.sqrMagnitude < 
-        //(sp)
+
         //判断玩家是否在空中
         isInAir = IsInAir();
-        Debug.Log("isInAir" + isInAir);
+        //Debug.Log("isInAir" + isInAir);
         if (!isInAir)
         {
             playerRigidbody.drag = 5f;
@@ -150,60 +157,18 @@ public class PlayerController : MonoBehaviour
         }
         isJump = false;
     }
-    //void PlayerMove()
-    //{
 
-
-    //    inputXYValue.x = Input.GetAxis("Horizontal");
-    //    inputXYValue.y = Input.GetAxis("Vertical");
-
-    //    if(Mathf.Abs(inputXYValue.x) > 0.1f || Mathf.Abs(inputXYValue.y) > 0.1f)
-    //    {
-    //        isMoving = true;
-    //    }
-
-    //    //movement.x = inputXYValue.x;
-    //    //movement.y = 0f;
-    //    //movement.z = inputXYValue.y;
-    //    //movement *= speed;
-
-
-    //    if (Input.GetButton("Jump") && !isJumping)
-    //    {
-    //        isJumping = true;
-    //        movement.y = speedJump;
-    //    }
-    //    //if(isJumping)
-    //    //{
-    //    //    movement.y += jumpForce * Time.deltaTime;
-    //    //    if()
-    //    //}
-
-
-    //    if (isMoving)
-    //    {
-    //        movement.x = inputXYValue.x;
-    //        //movement.y = 0f;
-    //        movement.z = inputXYValue.y;
-    //        movement *= speed;
-    //        //playerController.Move(movement * Time.deltaTime);
-    //        isMoving = false;
-    //    }
-
-    //    if (isJumping)
-    //    {
-    //        movement.y -= gravity * Time.deltaTime;
-    //        flags = playerController.Move(movement * Time.deltaTime);
-    //        if (flags == CollisionFlags.Below)
-    //        {
-    //            isJumping = false;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        playerController.Move(movement * Time.deltaTime);
-    //    }
-    //}
+    void PlayerGetOnTank()
+    {
+        if(Input.GetKeyDown(KeyCode.T))
+        {
+            Debug.Log("get on");
+            mainCameraObj.SetActive(false);
+            tankCameraObj.SetActive(true);
+            isInTank = true;
+            playerTankController.isOutTank = false;
+        }
+    }
 
     bool IsInAir()
     {
