@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     //调节相机旋转的参数
-    [SerializeField] private float mouseSensitivity = 1f;
+    [SerializeField] private float mouseSensitivity = .5f;
     [SerializeField] private float smoothTime = 18f;
     [SerializeField] private float camVerticalRotThresh = 0.8f; //旋转范围
     [SerializeField] private float camVerticalRotMargin = 0.05f;//相机反向旋转的弧度大小, 此值应尽量小,防止相机抖动
@@ -21,7 +21,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject mainCameraObj;
     [SerializeField] private GameObject tankCameraObj;
     [SerializeField] private PlayerTankController playerTankController;
+    [SerializeField] private Transform realTankTrans;
     public bool isInTank;
+    private float canGetOnRadius = 5f;
 
     //通过刚体控制玩家的移动
     private Rigidbody playerRigidbody;
@@ -37,7 +39,8 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         targetRotationPlayer = transform.localRotation;
-        camTrans = Camera.main.transform;
+        //camTrans = Camera.main.transform;
+        camTrans = GameObject.Find("Main Camera").transform;
         targetRotationCamera = camTrans.localRotation;
 
         playerRigidbody = GetComponent<Rigidbody>();
@@ -97,16 +100,17 @@ public class PlayerController : MonoBehaviour
         //控制相机的旋转范围
         if (camTrans.forward.y > camVerticalRotThresh)//若超出范围则反向旋转
             camTrans.RotateAround(camRotCenter,
-                Vector3.Cross(transform.up, transform.forward),
+                transform.right,//Vector3.Cross(transform.up, transform.forward),
                 camVerticalRotMargin);
         else if(camTrans.forward.y < -camVerticalRotThresh)
             camTrans.RotateAround(camRotCenter,
                 Vector3.Cross(transform.up, transform.forward),
                 -camVerticalRotMargin);
         else
-            camTrans.RotateAround(camRotCenter, 
+            camTrans.RotateAround(camRotCenter,
                 Vector3.Cross(transform.up, transform.forward),
                 vMouse);
+            
 
         //旋转玩家的刚体速度方向
         Quaternion yRotationRigidbody =
@@ -114,7 +118,6 @@ public class PlayerController : MonoBehaviour
             Vector3.up);
         playerRigidbody.velocity = yRotationRigidbody * playerRigidbody.velocity;
         
-
     }
 
     void PlayerMove()
@@ -122,9 +125,17 @@ public class PlayerController : MonoBehaviour
         //获取键盘输入
         h = Input.GetAxis("Horizontal");
         v = Input.GetAxis("Vertical");
+        bool run = Input.GetKey(KeyCode.LeftShift);
 
         //计算玩家移动速度
-        float speed = Mathf.Sqrt(h * h + v * v) * speedAdjust;
+        float speed = Mathf.Sqrt(h * h + v * v);
+        if (speed > 1f)
+            speed = 1f;
+
+        if (run)
+            speed = speed * speedAdjust;
+        else
+            speed = speed * speedAdjust * 0.5f;
 
         //计算玩家移动向量
         Vector3 movement = (transform.forward * v +
@@ -162,11 +173,21 @@ public class PlayerController : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.T))
         {
-            Debug.Log("get on");
-            mainCameraObj.SetActive(false);
-            tankCameraObj.SetActive(true);
-            isInTank = true;
-            playerTankController.isOutTank = false;
+            if(Vector2.Distance(
+                new Vector2(transform.position.x, transform.position.y),
+                new Vector2(realTankTrans.position.x, realTankTrans.position.y))
+                < canGetOnRadius)
+            {
+                Debug.Log("get on");
+                mainCameraObj.SetActive(false);
+                tankCameraObj.SetActive(true);
+                isInTank = true;
+                playerTankController.isOutTank = false;
+                playerTankController.hasPlayer = true;
+                playerTankController.DisplayAimImage();
+                gameObject.SetActive(false);
+            }
+            
         }
     }
 

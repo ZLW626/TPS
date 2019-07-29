@@ -6,6 +6,7 @@ using Assets.Script.Network;
 using Assets.Script.Common;
 using System.Security.Cryptography;
 using System.Text;
+using UnityEngine.SceneManagement;
 
 public class LoginOrRegister : MonoBehaviour
 {
@@ -69,7 +70,11 @@ public class LoginOrRegister : MonoBehaviour
         MsgSCBase msgComfirm = new UnifromUnmarshal().Unmarshal(dataReceivedNoHead);
         int comfirmCode = ((MsgSCConfirm)msgComfirm).confirm;
         if (comfirmCode == 626)
+        {
             Debug.Log("login successfully!");
+            loginPanel.SetActive(false);
+            SceneManager.LoadScene("BattlefieldScene");
+        }
         else
             Debug.Log("login failed!");
 
@@ -107,7 +112,10 @@ public class LoginOrRegister : MonoBehaviour
             MsgSCBase msgComfirm = new UnifromUnmarshal().Unmarshal(dataReceivedNoHead);
             int comfirmCode = ((MsgSCConfirm)msgComfirm).confirm;
             if (comfirmCode == 1)
+            {
                 Debug.Log("register successfully!");
+                registerPanel.SetActive(false);
+            }
             else
                 Debug.Log("register failed!");
 

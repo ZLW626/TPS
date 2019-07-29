@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1617228717237788104}
   - component: {fileID: 7295218786195895182}
   - component: {fileID: 7314828183311310377}
+  - component: {fileID: 1737066727773257608}
   m_Layer: 0
   m_Name: Shell
   m_TagString: Untagged
@@ -103,9 +104,26 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5893971744471230737}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.3
   m_Height: 1
   m_Direction: 2
   m_Center: {x: 0, y: 0.000000014901161, z: 0.34}
+--- !u!114 &1737066727773257608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5893971744471230737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ca2cff425aaba649807586099d73b3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireableLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  explodeRadius: 0
+  explodeParticles: {fileID: 0}

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.IO;
 using UnityEngine;
 using System.Collections;
+using System.Text.RegularExpressions;
+
 namespace Assets.Script.Common
 {
     public class UniParam
@@ -14,6 +16,15 @@ namespace Assets.Script.Common
         public string strVal;
         public int intVal;
         public short shortVal;
+    }
+
+    public class EnemyData
+    {
+        public int enemyID;
+        public int enemyType;
+        public int bornPointID;
+        //public int x;
+        //public int y;
     }
 
     public class MsgCSBase
@@ -127,9 +138,9 @@ namespace Assets.Script.Common
         {
             sid_cid = Conf.MSG_CS_REGISTER;
             int lenLenFlag = sizeof(int) * 2;
-            int datalen = Conf.NET_HEAD_LENGTH_SIZE + Conf.NET_SID_CID_LENGTH_SIZE + name.Length + password.Length + lenLenFlag;
+            int dataLen = Conf.NET_HEAD_LENGTH_SIZE + Conf.NET_SID_CID_LENGTH_SIZE + name.Length + password.Length + lenLenFlag;
 
-            appendParamInt(datalen);
+            appendParamInt(dataLen);
             appendParamInt(name.Length);
             appendParamStr(name);
             appendParamInt(password.Length);
@@ -140,6 +151,18 @@ namespace Assets.Script.Common
         //{
         //    int lenLenflag = size
         //}
+    }
+
+    public class MsgCSAskForEnemies: MsgCSBase
+    {
+        public MsgCSAskForEnemies()
+        {
+            sid_cid = Conf.MSG_CS_ASK_FOR_ENEMY;
+            int askCode = 1;
+            int dataLen = Conf.NET_HEAD_LENGTH_SIZE + Conf.NET_SID_CID_LENGTH_SIZE + sizeof(int);
+            appendParamInt(dataLen);
+            appendParamInt(askCode);
+        }
     }
 
     public class MsgSCBase
@@ -176,7 +199,48 @@ namespace Assets.Script.Common
         }
     }
 
-    public class UnifromUnmarshal
+    public class MsgSCEnemyInitialize: MsgSCBase
+    {
+        public List<EnemyData> enemies;
+        public int enemyNum;
+
+        public MsgSCEnemyInitialize Unmarshal(byte[] bytes)
+        {
+            memoryStream = new MemoryStream(bytes);
+            binaryReader = new BinaryReader(memoryStream);
+            short sid_cid = binaryReader.ReadInt16();
+            enemyNum = binaryReader.ReadInt32();
+            enemies = new List<EnemyData>(enemyNum);
+            int strLen = binaryReader.ReadInt32();
+            //敌人信息被转化为字符串进行传输, 这里接收的是字符串
+            //char[] enemyDataChars = new char[strLen];
+            //Debug.Log(binaryReader.ReadChar());
+            //Debug.Log(binaryReader.ReadChar());
+            //for(int i = 0;i < strLen;++i)
+            //{
+            //    enemyDataChars[i] = binaryReader.ReadChar();
+            //    Debug.Log(enemyDataChars[i]);
+            //}
+            //Debug.Log(new string(enemyDataChars));
+            //string enemyDataStr = enemyDataChars.ToString();
+            string enemyDataStr = new string(binaryReader.ReadChars(strLen));
+            string[] enemyDataList = Regex.Split(enemyDataStr, "#");
+            Debug.Log(enemyDataList);
+
+            for (int i = 0;i < enemyDataList.Length;)
+            {
+                EnemyData enemyData = new EnemyData();
+                enemyData.enemyID = int.Parse(enemyDataList[i++]);
+                enemyData.enemyType = int.Parse(enemyDataList[i++]);
+                enemyData.bornPointID = int.Parse(enemyDataList[i++]);
+
+                enemies.Add(enemyData);
+            }
+            return this;
+        }
+    }
+
+    public class UnifromUnmarshal//可以改成单例模式
     {
         //protected MemoryStream memoryStream;
         //protected BinaryReader binaryReader;
@@ -193,12 +257,19 @@ namespace Assets.Script.Common
             {
                 case 0x2001:
                     msgSCBase = new MsgSCConfirm().Unmarshal(bytes);
-                    msgSCBase.sid = sid_cid >> 8;
-                    msgSCBase.cid = sid_cid & 0x00FF;
+                    //msgSCBase.sid = sid_cid >> 8;
+                    //msgSCBase.cid = sid_cid & 0x00FF;
+                    break;
+                case 0x3002:
+                    msgSCBase = new MsgSCEnemyInitialize().Unmarshal(bytes);
+                    //msgSCBase.sid = sid_cid >> 8;
+                    //msgSCBase.cid = sid_cid & 0x00FF;
                     break;
                 default:
                     return null;
             }
+            msgSCBase.sid = sid_cid >> 8;
+            msgSCBase.cid = sid_cid & 0x00FF;
             return msgSCBase;
         }
 

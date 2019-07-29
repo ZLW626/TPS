@@ -28,8 +28,16 @@ public class PlayerAnimation : MonoBehaviour
 
     void PlayerAnimate()
     {
-        playerAnimator.SetFloat("speedV", playerController.v);
-        playerAnimator.SetFloat("speedH", playerController.h);
+        //往后跑时动画需要调整
+        float adjustRunWalk = 1f;
+        bool run = Input.GetKey(KeyCode.LeftShift);
+        if (!run)
+            adjustRunWalk *= .5f;
+        playerAnimator.SetFloat("speedV", playerController.v * adjustRunWalk);
+        if(playerController.v < 0)
+            playerAnimator.SetFloat("speedH", -playerController.h * adjustRunWalk);
+        else
+            playerAnimator.SetFloat("speedH", playerController.h * adjustRunWalk);
         //Debug.Log("v" + playerController.v);
         //Debug.Log("h" + playerController.h);
 
