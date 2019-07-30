@@ -22,13 +22,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject tankCameraObj;
     [SerializeField] private PlayerTankController playerTankController;
     [SerializeField] private Transform realTankTrans;
-    public bool isInTank;
+    //public bool isInTank;
     private float canGetOnRadius = 5f;
 
     //通过刚体控制玩家的移动
     private Rigidbody playerRigidbody;
     private CapsuleCollider playerCollider;
-    private bool isJump;
+    //private bool isJump;
     private bool isInAir;
     private float jumpForce = 60f;
     //private Animator playerAnimator;
@@ -47,24 +47,24 @@ public class PlayerController : MonoBehaviour
         playerCollider = GetComponent<CapsuleCollider>();
         //playerAnimator = GetComponent<Animator>();
 
-        isInTank = false;
+        //isInTank = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isInTank)
-            return;
+        //if (isInTank)
+        //    return;
         //Debug.Log("out tank update");
-        CameraRotate();
+        //CameraRotate();
 
-        PlayerGetOnTank();
+        //PlayerGetOnTank();
 
-        if(Input.GetButtonDown("Jump") && !isJump)
-        {
-            Debug.Log("Jump");
-            isJump = true;
-        }
+        //if(Input.GetButtonDown("Jump") && !isJump)
+        //{
+        //    Debug.Log("Jump");
+        //    isJump = true;
+        //}
 
         //锁定鼠标
         Cursor.lockState = CursorLockMode.Locked;
@@ -73,20 +73,22 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isInTank)
-            return;
+        //if (isInTank)
+        //    return;
 
-        PlayerMove();
+        //PlayerMove();
     }
 
-    void CameraRotate()
+    public void CameraRotate(float h, float v)
     {
         //记录玩家的朝向
         float yOldAng = transform.eulerAngles.y;
 
         //获取鼠标移动
-        float hMouse = Input.GetAxis("Mouse X") * mouseSensitivity;
-        float vMouse = Input.GetAxis("Mouse Y") * mouseSensitivity;
+        //float hMouse = Input.GetAxis("Mouse X") * mouseSensitivity;
+        //float vMouse = Input.GetAxis("Mouse Y") * mouseSensitivity;
+        float hMouse = h * mouseSensitivity;
+        float vMouse = v * mouseSensitivity;
         //计算玩家和相机需要旋转的角度
         targetRotationPlayer *= Quaternion.Euler(0f, hMouse, 0f);
         targetRotationCamera *= Quaternion.Euler(vMouse, 0f, 0f);
@@ -120,12 +122,12 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    void PlayerMove()
+    public void PlayerMove(float h, float v, bool run, ref bool isJump)
     {
-        //获取键盘输入
-        h = Input.GetAxis("Horizontal");
-        v = Input.GetAxis("Vertical");
-        bool run = Input.GetKey(KeyCode.LeftShift);
+        ////获取键盘输入
+        //h = Input.GetAxis("Horizontal");
+        //v = Input.GetAxis("Vertical");
+        //bool run = Input.GetKey(KeyCode.LeftShift);
 
         //计算玩家移动速度
         float speed = Mathf.Sqrt(h * h + v * v);
@@ -169,10 +171,10 @@ public class PlayerController : MonoBehaviour
         isJump = false;
     }
 
-    void PlayerGetOnTank()
+    public void PlayerGetOnTank()
     {
-        if(Input.GetKeyDown(KeyCode.T))
-        {
+        //if(Input.GetKeyDown(KeyCode.T))
+        //{
             if(Vector2.Distance(
                 new Vector2(transform.position.x, transform.position.y),
                 new Vector2(realTankTrans.position.x, realTankTrans.position.y))
@@ -181,14 +183,14 @@ public class PlayerController : MonoBehaviour
                 Debug.Log("get on");
                 mainCameraObj.SetActive(false);
                 tankCameraObj.SetActive(true);
-                isInTank = true;
+                //isInTank = true;
                 playerTankController.isOutTank = false;
                 playerTankController.hasPlayer = true;
                 playerTankController.DisplayAimImage();
                 gameObject.SetActive(false);
             }
             
-        }
+        //}
     }
 
     bool IsInAir()

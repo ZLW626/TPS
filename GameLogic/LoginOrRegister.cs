@@ -67,16 +67,31 @@ public class LoginOrRegister : MonoBehaviour
 
         //byte[] dataReceived = { };
         byte[] dataReceivedNoHead = SocketClient.RemoveDataHead();
-        MsgSCBase msgComfirm = new UnifromUnmarshal().Unmarshal(dataReceivedNoHead);
-        int comfirmCode = ((MsgSCConfirm)msgComfirm).confirm;
-        if (comfirmCode == 626)
+        MsgSCBase msgSCBase = new UnifromUnmarshal().Unmarshal(dataReceivedNoHead);
+
+        MsgSCLoginConfirm msgConfirm = (MsgSCLoginConfirm)msgSCBase;
+        //MsgSCBase msgComfirm = new UnifromUnmarshal().Unmarshal(dataReceivedNoHead);
+        int comfirmCode = msgConfirm.confirm;
+        if (comfirmCode == 0)
         {
             Debug.Log("login successfully!");
             loginPanel.SetActive(false);
+            PlayerPrefs.SetInt("hp", msgConfirm.hp);
+            PlayerPrefs.SetInt("money", msgConfirm.money);
+            PlayerPrefs.SetInt("ammo", msgConfirm.ammo);
+            PlayerPrefs.SetInt("grenade", msgConfirm.grenade);
+            PlayerPrefs.SetFloat("shell", msgConfirm.shell);
+
             SceneManager.LoadScene("BattlefieldScene");
         }
         else
+        {
+            loginNameIF.text = "";
+            loginPasswordIF.text = "";
             Debug.Log("login failed!");
+            loginPanel.SetActive(false);
+        }
+            
 
 
     }

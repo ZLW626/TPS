@@ -11,7 +11,8 @@ public class HealthBarController : MonoBehaviour
     public Image hpBarBkg;
     public Text hpValText;
 
-    private PlayerController playerController;
+    //private PlayerController playerController;
+    private InputManager inputManager;
     private GameObject playerCamera;
     private GameObject tankCamera;
     
@@ -22,7 +23,8 @@ public class HealthBarController : MonoBehaviour
         hpBarBkg.fillAmount = slider.value;
         hpValText.text = "HP: " + maxHpVal;
 
-        playerController = GameObject.Find("Player").GetComponent<PlayerController>();
+        //playerController = GameObject.Find("Player").GetComponent<PlayerController>();
+        inputManager = GameObject.Find("InputManager").GetComponent<InputManager>();
         playerCamera = GameObject.Find("Main Camera");
         tankCamera = GameObject.Find("TankCamera");
     }
@@ -30,7 +32,11 @@ public class HealthBarController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (playerController.isInTank)//坦克模式
+        //if (playerController.isInTank)//坦克模式
+        //    transform.rotation = tankCamera.transform.rotation;
+        //else
+        //    transform.rotation = playerCamera.transform.rotation;
+        if (inputManager.isOnTank)//坦克模式
             transform.rotation = tankCamera.transform.rotation;
         else
             transform.rotation = playerCamera.transform.rotation;

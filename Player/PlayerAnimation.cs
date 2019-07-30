@@ -23,7 +23,7 @@ public class PlayerAnimation : MonoBehaviour
 
     private void LateUpdate()
     {
-        PlayerAnimate();
+        //PlayerAnimate();
     }
 
     void PlayerAnimate()
@@ -31,15 +31,15 @@ public class PlayerAnimation : MonoBehaviour
         //往后跑时动画需要调整
         float adjustRunWalk = 1f;
         bool run = Input.GetKey(KeyCode.LeftShift);
-        if (!run)
-            adjustRunWalk *= .5f;
-        playerAnimator.SetFloat("speedV", playerController.v * adjustRunWalk);
-        if(playerController.v < 0)
-            playerAnimator.SetFloat("speedH", -playerController.h * adjustRunWalk);
-        else
-            playerAnimator.SetFloat("speedH", playerController.h * adjustRunWalk);
-        //Debug.Log("v" + playerController.v);
-        //Debug.Log("h" + playerController.h);
+        //if (!run)
+        //    adjustRunWalk *= .5f;
+        //playerAnimator.SetFloat("speedV", playerController.v * adjustRunWalk);
+        //if(playerController.v < 0)
+        //    playerAnimator.SetFloat("speedH", -playerController.h * adjustRunWalk);
+        //else
+        //    playerAnimator.SetFloat("speedH", playerController.h * adjustRunWalk);
+        ////Debug.Log("v" + playerController.v);
+        ////Debug.Log("h" + playerController.h);
 
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -54,4 +54,25 @@ public class PlayerAnimation : MonoBehaviour
         if (Input.GetButton("Fire1"))
             playerAnimator.SetTrigger("gunShoot");
     }
+
+    public void Shoot()
+    {
+        playerAnimator.SetTrigger("gunShoot");
+    }
+
+    public void Move(float h, float v, bool run)
+    {
+        float adjustRunWalk = 1f;
+        if (!run)
+            adjustRunWalk *= .5f;
+        playerAnimator.SetFloat("speedV", v * adjustRunWalk);
+        if (playerController.v < 0)
+            playerAnimator.SetFloat("speedH", -h * adjustRunWalk);
+        else
+            playerAnimator.SetFloat("speedH", h * adjustRunWalk);
+        //Debug.Log("v" + playerController.v);
+        //Debug.Log("h" + playerController.h);
+    }
+
+
 }

@@ -59,24 +59,24 @@ public class PlayerTankController : MonoBehaviour
     {
         if (isOutTank)
             return;
-        CameraRotate();
+        //CameraRotate();
 
-        TankTurretRotate();
+        //TankTurretRotate();
 
-        PlayerGetOffTank();
+        //PlayerGetOffTank();
     }
 
     private void FixedUpdate()
     {
-        if (isOutTank)
-            return;
-        TankMove();
+        //if (isOutTank)
+        //    return;
+        //TankMove();
     }
 
-    void CameraRotate()
+    public void CameraRotate(float hMouse)
     {
-        //获取鼠标移动
-        hMouse = Input.GetAxis("Mouse X") * mouseSensitivity;
+        ////获取鼠标移动
+        //hMouse = Input.GetAxis("Mouse X") * mouseSensitivity;
 
         //设置相机的旋转中心
         tankCamRotCenter.x = realTankTrans.position.x;
@@ -88,7 +88,7 @@ public class PlayerTankController : MonoBehaviour
         fakeObject.transform.RotateAround(tankCamRotCenter, Vector3.up, hMouse);
     }
 
-    void TankTurretRotate()
+    public void TankTurretRotate()
     {
         StartCoroutine(TurretRotateCore(oldAngle));
 
@@ -113,11 +113,11 @@ public class PlayerTankController : MonoBehaviour
             tankTurretTrans.rotation = tankTurretTrans.rotation;
     }
 
-    void TankMove()
+    public void TankMove(float h, float v)
     {
-        //获取键盘输入
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        ////获取键盘输入
+        //float h = Input.GetAxis("Horizontal");
+        //float v = Input.GetAxis("Vertical");
         if (v < 0)
             h = -h;
 
@@ -131,22 +131,22 @@ public class PlayerTankController : MonoBehaviour
         tankRigidbody.MovePosition(tankRigidbody.position + movement);
     }
 
-    void PlayerGetOffTank()
+    public void PlayerGetOffTank()
     {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
+        //if (Input.GetKeyDown(KeyCode.F))
+        //{
             Debug.Log("get off");
             playerObj.SetActive(true);
             mainCameraObj.SetActive(true);
 
             playerObj.transform.position = getOffPoint.position;
             tankCameraObj.SetActive(false);
-            isOutTank = true;
-            hasPlayer = false;
-            playerController.isInTank = false;
+            //isOutTank = true;
+            //hasPlayer = false;
+            //playerController.isInTank = false;
             UndisplayAimImage();
 
-        }
+        //}
     }
 
     public void DisplayAimImage()

@@ -13,7 +13,7 @@ public class EnemyManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        InitializeEnemies();
+        //InitializeEnemies(0);
     }
 
     // Update is called once per frame
@@ -22,9 +22,9 @@ public class EnemyManager : MonoBehaviour
         
     }
 
-    void InitializeEnemies()
+    public void InitializeEnemies(int round)
     {
-        MsgCSAskForEnemies msgAsk = new MsgCSAskForEnemies();
+        MsgCSAskForEnemies msgAsk = new MsgCSAskForEnemies(round);
         byte[] msgPacked = msgAsk.Marshal();
         SocketClient.netStream.Write(msgPacked, 0, msgPacked.Length);
 
@@ -38,6 +38,8 @@ public class EnemyManager : MonoBehaviour
             int enemyID = msgEnemyData.enemies[i].enemyID;
             int enemyType = msgEnemyData.enemies[i].enemyType;
             GameObject currEnemy;
+            Debug.Log("enemy num: " + enemyNum);
+            Debug.Log("enemy id: " + enemyID);
             if (enemyType == 0)//实例化一个远程敌人
                 currEnemy = GameObject.Instantiate(
                     longRangePrefab,

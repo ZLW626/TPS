@@ -155,13 +155,13 @@ namespace Assets.Script.Common
 
     public class MsgCSAskForEnemies: MsgCSBase
     {
-        public MsgCSAskForEnemies()
+        public MsgCSAskForEnemies(int roundNum)
         {
             sid_cid = Conf.MSG_CS_ASK_FOR_ENEMY;
-            int askCode = 1;
+            
             int dataLen = Conf.NET_HEAD_LENGTH_SIZE + Conf.NET_SID_CID_LENGTH_SIZE + sizeof(int);
             appendParamInt(dataLen);
-            appendParamInt(askCode);
+            appendParamInt(roundNum);
         }
     }
 
@@ -240,6 +240,36 @@ namespace Assets.Script.Common
         }
     }
 
+    public class MsgSCLoginConfirm :MsgSCBase
+    {
+        public int confirm; 
+        public int hp;
+        public int money;
+        public int ammo;
+        public int grenade;
+        public int shell;
+
+        public MsgSCLoginConfirm Unmarshal(byte[] bytes)
+        {
+            memoryStream = new MemoryStream(bytes);
+            binaryReader = new BinaryReader(memoryStream);
+            short sid_cid = binaryReader.ReadInt16();
+            confirm = binaryReader.ReadInt32();
+            Debug.Log("confirm: " + confirm);
+            hp = binaryReader.ReadInt32();
+            money = binaryReader.ReadInt32();
+            ammo = binaryReader.ReadInt32();
+            grenade = binaryReader.ReadInt32();
+            shell = binaryReader.ReadInt32();
+            Debug.Log(hp);
+            Debug.Log(money);
+            Debug.Log(ammo);
+            Debug.Log(grenade);
+            Debug.Log(shell);
+            return this;
+        }
+    }
+
     public class UnifromUnmarshal//可以改成单例模式
     {
         //protected MemoryStream memoryStream;
@@ -264,6 +294,9 @@ namespace Assets.Script.Common
                     msgSCBase = new MsgSCEnemyInitialize().Unmarshal(bytes);
                     //msgSCBase.sid = sid_cid >> 8;
                     //msgSCBase.cid = sid_cid & 0x00FF;
+                    break;
+                case 0x1003:
+                    msgSCBase = new MsgSCLoginConfirm().Unmarshal(bytes);
                     break;
                 default:
                     return null;
