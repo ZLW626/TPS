@@ -34,3 +34,6 @@ yo yo check now
 i DONT KNOW
 
 DO YOU KNOW
+
+
+ARE YOU OK
